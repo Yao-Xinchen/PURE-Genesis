@@ -20,6 +20,7 @@ class PureEnv:
         self.num_obs = obs_cfg["num_obs"]
         self.num_privileged_obs = None
         self.num_actions = env_cfg["num_actions"]
+        self.num_commands = command_cfg["num_commands"]
 
         self.simulate_action_latency = env_cfg["simulate_action_latency"]
         self.dt = 0.01  # run in 100hz
@@ -70,16 +71,20 @@ class PureEnv:
         self.base_init_quat = torch.tensor(self.env_cfg["base_init_quat"], device=self.device)
         self.inv_base_init_quat = inv_quat(self.base_init_quat)
         self.robot = self.scene.add_entity(
-            gs.morphs.URDF(file="assets/pure/urdf/pure.urdf"),
-            pos=self.base_init_pos.cpu().numpy(),
-            quat=self.base_init_quat.cpu().numpy()
+            gs.morphs.URDF(
+                file="assets/pure/urdf/pure.urdf",
+                pos=self.base_init_pos.cpu().numpy(),
+                quat=self.base_init_quat.cpu().numpy()
+            ),
         )
 
         # add ball
         self.ball_radius = self.env_cfg["ball_radius"]  # 0.12
         self.ball = self.scene.add_entity(
-            gs.morphs.Sphere(radius=self.ball_radius),
-            pos=(0.0, 0.0, self.ball_radius),
+            gs.morphs.Sphere(
+                radius=self.ball_radius,
+                pos=(0.0, 0.0, self.ball_radius),
+            ),
         )
 
         # build scene
@@ -88,17 +93,12 @@ class PureEnv:
         # set gains
         act_joints = ["omni_joint_0", "omni_joint_1", "omni_joint_2", "omni_joint_3"]
         self.act_dof_idx = [self.robot.get_joint(name).dof_idx_local for name in act_joints]  # actuated joints
-        self.pas_dof_idx = [self.robot.get_joint(name).dof_idx_local for name in act_joints]  # passive joints
-        self.all_dof_idx = self.act_dof_idx + self.pas_dof_idx
         self.num_act_dofs = len(self.act_dof_idx)
-        self.num_dofs = len(self.all_dof_idx)
 
         self.target_dof_vel = torch.zeros((self.num_envs, self.num_act_dofs), device=self.device, dtype=gs.tc_float)
 
-        kp_tensor = torch.zeros((self.num_dofs,), device=self.device, dtype=gs.tc_float)
-        kp_tensor[self.act_dof_idx] = self.env_cfg["joint_kp"]  # 10.0
-        kv_tensor = torch.zeros((self.num_dofs,), device=self.device, dtype=gs.tc_float)
-        kv_tensor[self.act_dof_idx] = self.env_cfg["joint_kv"]  # 2.0
+        self.robot.set_dofs_kp([self.env_cfg["kp"]] * self.num_actions, self.act_dof_idx)
+        self.robot.set_dofs_kv([self.env_cfg["kd"]] * self.num_actions, self.act_dof_idx)
 
         # prepare reward functions and multiply reward scales by dt
         self.reward_functions, self.episode_sums = dict(), dict()
@@ -163,7 +163,7 @@ class PureEnv:
         self.base_lin_vel[:] = transform_by_quat(self.robot.get_vel(), inv_base_quat)
         self.base_ang_vel[:] = transform_by_quat(self.robot.get_ang(), inv_base_quat)
         self.projected_gravity = transform_by_quat(self.global_gravity, inv_base_quat)
-        self.dof_vel[:] = self.robot.get_dofs_velocity(self.all_dof_idx)
+        self.dof_vel[:] = self.robot.get_dofs_velocity(self.act_dof_idx)
 
         # resample commands
         envs_idx = (
@@ -197,9 +197,10 @@ class PureEnv:
                 self.base_ang_vel * self.obs_scales["ang_vel"],  # 3
                 self.projected_gravity,  # 3
                 self.commands * self.commands_scale,  # 3
-                self.dof_vel[:, self.act_dof_idx] * self.obs_scales["dof_vel"],  # 4
+                self.dof_vel * self.obs_scales["dof_vel"],  # 4
                 self.actions,  # 4
-            ]
+            ],
+            dim=1,
         )
 
         self.last_actions[:] = self.actions[:]
@@ -219,12 +220,7 @@ class PureEnv:
 
         # reset dofs
         self.dof_vel[envs_idx] = 0.0
-        self.robot.set_dofs_position(
-            position=torch.zeros((self.num_dofs,), device=self.device, dtype=gs.tc_float),
-            dofs_idx_local=self.all_dof_idx,
-            zero_velocity=True,
-            envs_idx=envs_idx,
-        )
+        self.robot.set_dofs_velocity(self.dof_vel[envs_idx], self.act_dof_idx, envs_idx)
         # reset base
         self.base_pos[envs_idx] = self.base_init_pos
         self.base_quat[envs_idx] = self.base_init_quat.reshape(1, -1)
@@ -233,6 +229,10 @@ class PureEnv:
         self.base_lin_vel[envs_idx] = 0
         self.base_ang_vel[envs_idx] = 0
         self.robot.zero_all_dofs_velocity(envs_idx)
+        # reset ball
+        ball_pos = torch.tensor([0.0, 0.0, self.ball_radius], device=self.device, dtype=gs.tc_float)
+        ball_pos = ball_pos.view(1, 3).repeat(len(envs_idx), 1)
+        self.ball.set_pos(ball_pos, envs_idx=envs_idx)
 
         # reset buffers
         self.last_actions[envs_idx] = 0.0
