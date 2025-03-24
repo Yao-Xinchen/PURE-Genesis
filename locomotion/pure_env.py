@@ -257,4 +257,15 @@ class PureEnv:
 
     # ------------ reward functions----------------
     def _reward_vertical(self):
-        return torch.norm(self.projected_gravity, dim=1)
+        return torch.norm(self.projected_gravity[:, :2], dim=1)
+
+    def _reward_height(self):
+        return self.base_pos[:, 2] - 0.12
+
+    def _reward_track_vel(self):
+        error = torch.square(self.base_lin_vel[:, :2] - self.commands[:, :2])
+        return torch.sum(error, dim=1)
+
+    def _reward_track_ang_vel(self):
+        error = torch.square(self.base_ang_vel[:, 2] - self.commands[:, 2])
+        return error

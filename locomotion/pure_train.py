@@ -49,7 +49,7 @@ def get_train_cfg(exp_name, max_iterations):
             "resume_path": None,
             "run_name": "",
             "runner_class_name": "runner_class_name",
-            "save_interval": 100,
+            "save_interval": 50,
         },
         "runner_class_name": "OnPolicyRunner",
         "seed": 1,
@@ -65,15 +65,15 @@ def get_cfgs():
         "kp": 5.0,
         "kd": 0.2,
         # termination
-        "termination_if_roll_greater_than": 20,  # degree
-        "termination_if_pitch_greater_than": 20,
+        "termination_if_roll_greater_than": 60,  # degree
+        "termination_if_pitch_greater_than": 60,
         # base
         "base_init_pos": [0.0, 0.0, 0.12],
         "base_init_quat": [1.0, 0.0, 0.0, 0.0],
         "ball_radius": 0.12,
         "episode_length_s": 20.0,
         "resampling_time_s": 4.0,
-        "action_scale": 0.25,
+        "action_scale": 10.0,
         "simulate_action_latency": True,
         "clip_actions": 100.0,
         # visualization
@@ -94,14 +94,17 @@ def get_cfgs():
     reward_cfg = {
         "reward_scales": {
             "vertical": -10.0,
+            "height": 10.0,
+            "track_vel": -20.0,
+            "track_ang_vel": -5.0,
         }
     }
 
     command_cfg = {
         "num_commands": 3,
-        "lin_vel_x_range": [0.5, 0.5],
-        "lin_vel_y_range": [0.5, 0.5],
-        "ang_vel_range": [0, 0],
+        "lin_vel_x_range": [-0.3, 0.3],
+        "lin_vel_y_range": [-0.3, 0.3],
+        "ang_vel_range": [-0.001, 0.001],
     }
 
     return env_cfg, obs_cfg, reward_cfg, command_cfg
