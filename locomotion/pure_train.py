@@ -110,7 +110,7 @@ def get_cfgs():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-e", "--exp_name", type=str, default="pure")
-    parser.add_argument("-B", "--num_envs", type=int, default=4096)
+    parser.add_argument("-B", "--num_envs", type=int, default=8192)
     parser.add_argument("--max_iterations", type=int, default=2500)
     parser.add_argument("-r", "--resume", type=str, default=None)
     args = parser.parse_args()
@@ -137,7 +137,7 @@ def main():
     runner = OnPolicyRunner(env, train_cfg, log_dir, device="cuda:0")
 
     pickle.dump(
-        [env_cfg, obs_cfg, reward_cfg, train_cfg, command_cfg],
+        [env_cfg, obs_cfg, reward_cfg, command_cfg, train_cfg],
         open(f"{log_dir}/cfgs.pkl", "wb"),
     )
 
