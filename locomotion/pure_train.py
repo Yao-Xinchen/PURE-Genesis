@@ -99,6 +99,7 @@ def get_cfgs():
             "track_ang_vel": -5.0,
             "torque": -0.01,
             "action_change": -0.01,
+            "early_termination": -100.0,
         }
     }
 
