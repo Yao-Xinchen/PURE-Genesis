@@ -133,6 +133,7 @@ class PureEnv:
         self.actions = torch.zeros((self.num_envs, self.num_actions), device=self.device, dtype=gs.tc_float)
         self.last_actions = torch.zeros_like(self.actions)
         self.dof_vel = torch.zeros_like(self.actions)
+        self.dof_tor = torch.zeros_like(self.actions)
         self.last_dof_vel = torch.zeros_like(self.actions)
         self.base_pos = torch.zeros((self.num_envs, 3), device=self.device, dtype=gs.tc_float)
         self.base_quat = torch.zeros((self.num_envs, 4), device=self.device, dtype=gs.tc_float)
@@ -164,6 +165,7 @@ class PureEnv:
         self.base_ang_vel[:] = transform_by_quat(self.robot.get_ang(), inv_base_quat)
         self.projected_gravity = transform_by_quat(self.global_gravity, inv_base_quat)
         self.dof_vel[:] = self.robot.get_dofs_velocity(self.act_dof_idx)
+        self.dof_tor[:] = self.robot.get_dofs_force(self.act_dof_idx)
 
         # resample commands
         envs_idx = (
@@ -260,7 +262,7 @@ class PureEnv:
         return torch.norm(self.projected_gravity[:, :2], dim=1)
 
     def _reward_height(self):
-        return self.base_pos[:, 2] - 0.12
+        return self.base_pos[:, 2] - self.ball_radius
 
     def _reward_track_vel(self):
         error = torch.square(self.base_lin_vel[:, :2] - self.commands[:, :2])
@@ -269,3 +271,9 @@ class PureEnv:
     def _reward_track_ang_vel(self):
         error = torch.square(self.base_ang_vel[:, 2] - self.commands[:, 2])
         return error
+
+    def _reward_torque(self):
+        return torch.sum(torch.square(self.dof_tor), dim=1)
+
+    def _reward_action_change(self):
+        return torch.sum(torch.square((self.actions - self.last_actions) / self.dt), dim=1)

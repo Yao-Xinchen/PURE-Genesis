@@ -97,6 +97,8 @@ def get_cfgs():
             "height": 10.0,
             "track_vel": -20.0,
             "track_ang_vel": -5.0,
+            "torque": -0.01,
+            "action_change": -0.01,
         }
     }
 
