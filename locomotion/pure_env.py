@@ -92,6 +92,16 @@ class PureEnv:
         )
         self.ball.set_friction(self.env_cfg["friction"])
 
+        # # add turbulence
+        # self.turbulence = self.scene.add_force_field(
+        #     gs.force_fields.Turbulence(
+        #         strength=10.0,
+        #         frequency=0.1,
+        #         flow=0.1,
+        #     )
+        # )
+        # self.turbulence.activate()
+
         # build scene
         self.scene.build(n_envs=num_envs)
 

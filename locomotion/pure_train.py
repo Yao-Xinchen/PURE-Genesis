@@ -100,9 +100,9 @@ def get_cfgs():
             "height": 10.0,
             "track_vel": 1.0,
             "track_ang_vel": 1.0,
-            "torque": -1e-3,
+            "torque": -1e-5,
             "action_change": -1e-7,
-            "early_termination": -1000.0,
+            # "early_termination": -1000.0,
         }
     }
 
