@@ -77,6 +77,7 @@ class PureEnv:
                 quat=self.base_init_quat.cpu().numpy()
             ),
         )
+        self.robot.set_friction(self.env_cfg["friction"])
 
         # add ball
         self.ball_radius = self.env_cfg["ball_radius"]  # 0.12
@@ -89,6 +90,7 @@ class PureEnv:
                 quat=self.ball_init_quat.cpu().numpy(),
             ),
         )
+        self.ball.set_friction(self.env_cfg["friction"])
 
         # build scene
         self.scene.build(n_envs=num_envs)
@@ -136,7 +138,7 @@ class PureEnv:
         )
         self.actions = torch.zeros((self.num_envs, self.num_actions), device=self.device, dtype=gs.tc_float)
         self.last_actions = torch.zeros_like(self.actions)
-        self.dof_vel = torch.zeros_like(self.actions)
+        self.dof_vel = torch.zeros_like(self.actions)  # rad/s
         self.dof_tor = torch.zeros_like(self.actions)
         self.last_dof_vel = torch.zeros_like(self.actions)
         self.base_pos = torch.zeros((self.num_envs, 3), device=self.device, dtype=gs.tc_float)
@@ -247,7 +249,7 @@ class PureEnv:
         self.last_dof_vel[envs_idx] = 0.0
         self.episode_length_buf[envs_idx] = 0
         self.reset_buf[envs_idx] = True
-        self.early_reset_buf[envs_idx] = False
+        self.early_reset_buf[envs_idx] = True
 
         # fill extras
         self.extras["episode"] = {}
@@ -268,12 +270,15 @@ class PureEnv:
     def _reward_vertical(self):
         return torch.norm(self.projected_gravity[:, :2], dim=1)
 
+    def _reward_vertical_2(self):
+        return torch.clip(torch.norm(self.projected_gravity[:, :2], dim=1) - 0.1, 0.0, None)
+
     def _reward_height(self):
         return self.base_pos[:, 2] - self.ball_radius
 
     def _reward_track_vel(self):
-        error = torch.sum(torch.square(self.base_lin_vel[:, :2] - self.commands[:, :2]))
-        return torch.exp(-error / 0.2)
+        error = torch.sum(torch.square(self.base_lin_vel[:, :2] - self.commands[:, :2]), dim=1)
+        return torch.exp(-error / 0.5)
 
     def _reward_track_ang_vel(self):
         error = torch.square(self.base_ang_vel[:, 2] - self.commands[:, 2])  # degree/s

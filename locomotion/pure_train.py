@@ -60,10 +60,11 @@ def get_train_cfg(exp_name, max_iterations):
 
 def get_cfgs():
     env_cfg = {
+        "friction": 0.8,
         "num_actions": 4,
         "num_dofs": 20,
         "kp": 5.0,
-        "kd": 0.2,
+        "kd": 0.5,
         # termination
         "termination_if_roll_greater_than": 60,  # degree
         "termination_if_pitch_greater_than": 60,
@@ -71,9 +72,9 @@ def get_cfgs():
         "base_init_pos": [0.0, 0.0, 0.12],
         "base_init_quat": [1.0, 0.0, 0.0, 0.0],
         "ball_radius": 0.12,
-        "episode_length_s": 20.0,
+        "episode_length_s": 10.0,
         "resampling_time_s": 4.0,
-        "action_scale": 10.0,
+        "action_scale": 5.0,
         "simulate_action_latency": True,
         "clip_actions": 100.0,
         # visualization
@@ -85,28 +86,30 @@ def get_cfgs():
     obs_cfg = {
         "num_obs": 17,
         "obs_scales": {
+            "gravity": 8.0,
             "lin_vel": 2.0,
             "ang_vel": 0.25,
-            "dof_vel": 0.05,
+            "dof_vel": 0.15,
         }
     }
 
     reward_cfg = {
         "reward_scales": {
-            "vertical": -10.0,
+            "vertical": -3.0,
+            "vertical_2": -100.0,
             "height": 10.0,
-            "track_vel": -20.0,
-            "track_ang_vel": -5.0,
-            "torque": -0.01,
-            "action_change": -0.01,
-            "early_termination": -100.0,
+            "track_vel": 1.0,
+            "track_ang_vel": 1.0,
+            "torque": -1e-3,
+            "action_change": -1e-7,
+            "early_termination": -1000.0,
         }
     }
 
     command_cfg = {
         "num_commands": 3,
-        "lin_vel_x_range": [-0.3, 0.3],
-        "lin_vel_y_range": [-0.3, 0.3],
+        "lin_vel_x_range": [-0.001, 0.001],
+        "lin_vel_y_range": [-0.001, 0.001],
         "ang_vel_range": [-0.001, 0.001],
     }
 
