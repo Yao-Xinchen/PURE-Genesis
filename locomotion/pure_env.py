@@ -80,10 +80,13 @@ class PureEnv:
 
         # add ball
         self.ball_radius = self.env_cfg["ball_radius"]  # 0.12
+        self.ball_init_pos = torch.tensor([0.0, 0.0, self.ball_radius], device=self.device)
+        self.ball_init_quat = torch.tensor([1.0, 0.0, 0.0, 0.0], device=self.device)
         self.ball = self.scene.add_entity(
             gs.morphs.Sphere(
                 radius=self.ball_radius,
-                pos=(0.0, 0.0, self.ball_radius),
+                pos=self.ball_init_pos.cpu().numpy(),
+                quat=self.ball_init_quat.cpu().numpy(),
             ),
         )
 
@@ -232,9 +235,10 @@ class PureEnv:
         self.base_ang_vel[envs_idx] = 0
         self.robot.zero_all_dofs_velocity(envs_idx)
         # reset ball
-        ball_pos = torch.tensor([0.0, 0.0, self.ball_radius], device=self.device, dtype=gs.tc_float)
-        ball_pos = ball_pos.view(1, 3).repeat(len(envs_idx), 1)
-        self.ball.set_pos(ball_pos, envs_idx=envs_idx)
+        self.ball.set_pos(self.ball_init_pos.unsqueeze(dim=0).repeat(len(envs_idx), 1),
+                          zero_velocity=True, envs_idx=envs_idx)
+        self.ball.set_quat(self.ball_init_quat.unsqueeze(dim=0).repeat(len(envs_idx), 1),
+                           zero_velocity=True, envs_idx=envs_idx)
 
         # reset buffers
         self.last_actions[envs_idx] = 0.0
