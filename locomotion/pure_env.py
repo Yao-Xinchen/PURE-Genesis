@@ -272,12 +272,12 @@ class PureEnv:
         return self.base_pos[:, 2] - self.ball_radius
 
     def _reward_track_vel(self):
-        error = torch.square(self.base_lin_vel[:, :2] - self.commands[:, :2])
-        return torch.sum(error, dim=1)
+        error = torch.sum(torch.square(self.base_lin_vel[:, :2] - self.commands[:, :2]))
+        return torch.exp(-error / 0.2)
 
     def _reward_track_ang_vel(self):
-        error = torch.square(self.base_ang_vel[:, 2] - self.commands[:, 2])
-        return error
+        error = torch.square(self.base_ang_vel[:, 2] - self.commands[:, 2])  # degree/s
+        return torch.exp(-error / 20.0)
 
     def _reward_torque(self):
         return torch.sum(torch.square(self.dof_tor), dim=1)
