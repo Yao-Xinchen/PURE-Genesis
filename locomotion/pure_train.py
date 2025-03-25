@@ -74,9 +74,9 @@ def get_cfgs():
         "ball_radius": 0.12,
         "episode_length_s": 10.0,
         "resampling_time_s": 4.0,
-        "action_scale": 5.0,
-        "simulate_action_latency": True,
-        "clip_actions": 100.0,
+        "action_scale": 25.0,
+        "simulate_action_latency": False,
+        "clip_actions": 2.0,
         # visualization
         "visualize_target": False,
         "visualize_camera": False,

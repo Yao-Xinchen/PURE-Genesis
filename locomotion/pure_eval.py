@@ -12,6 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from rsl_rl.runners import OnPolicyRunner
 from pure_env import PureEnv
 from pure_train import get_cfgs
+from pure_plot import PurePlot
 
 
 def main():
@@ -31,7 +32,7 @@ def main():
     # set the max FPS for visualization
     env_cfg["max_visualize_FPS"] = 60
     # set the episode length to 10 seconds
-    env_cfg["episode_length_s"] = 5.0
+    env_cfg["episode_length_s"] = 1000.0
 
     env = PureEnv(
         num_envs=1,
@@ -68,10 +69,25 @@ def main():
     policy = runner.get_inference_policy(device="cuda:0")
 
     obs, _ = env.reset()
+
+    reward_names = list(env.reward_functions.keys())
+    sample_obs = env.get_observations()
+    obs_dim = sample_obs.shape[1]
+
+    visualizer = PurePlot(reward_names, obs_dim)
+
     with torch.no_grad():
         while True:
             actions = policy(obs)
             obs, _, rews, dones, infos = env.step(actions)
+
+            reward_values = {}
+            for name, reward_func in env.reward_functions.items():
+                raw_value = reward_func()[0].item()
+                scale = reward_cfg["reward_scales"].get(name, 1.0)  # Default to 1.0 if no scale
+                reward_values[name] = raw_value * scale
+
+            visualizer.update(reward_values, obs)
 
 
 if __name__ == "__main__":
