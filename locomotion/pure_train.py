@@ -74,7 +74,7 @@ def get_cfgs():
         "ball_radius": 0.12,
         "episode_length_s": 10.0,
         "resampling_time_s": 4.0,
-        "action_scale": 25.0,
+        "action_scale": 100.0,
         "simulate_action_latency": False,
         "clip_actions": 2.0,
         # visualization
@@ -84,7 +84,7 @@ def get_cfgs():
     }
 
     obs_cfg = {
-        "num_obs": 17,
+        "num_obs": 20,
         "obs_scales": {
             "gravity": 8.0,
             "lin_vel": 2.0,
@@ -101,8 +101,8 @@ def get_cfgs():
             "track_vel": 1.0,
             "track_ang_vel": 1.0,
             "torque": -1e-5,
-            "action_change": -1e-7,
-            # "early_termination": -1000.0,
+            "action_change": -1e-6,
+            "dof_vel": -1e-4,
         }
     }
 

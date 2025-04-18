@@ -214,6 +214,7 @@ class PureEnv:
         self.obs_buf = torch.cat(
             [
                 self.base_ang_vel * self.obs_scales["ang_vel"],  # 3
+                self.base_lin_vel * self.obs_scales["lin_vel"],  # 3
                 self.projected_gravity,  # 3
                 self.commands * self.commands_scale,  # 3
                 self.dof_vel * self.obs_scales["dof_vel"],  # 4
@@ -302,3 +303,6 @@ class PureEnv:
 
     def _reward_early_termination(self):
         return self.early_reset_buf.float()
+
+    def _reward_dof_vel(self):
+        return torch.sum(torch.square(self.dof_vel), dim=1)
