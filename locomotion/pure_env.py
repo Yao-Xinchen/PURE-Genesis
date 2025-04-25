@@ -289,7 +289,7 @@ class PureEnv:
 
     def _reward_track_vel(self):
         error = torch.sum(torch.square(self.base_lin_vel[:, :2] - self.commands[:, :2]), dim=1)
-        return torch.exp(-error / 0.5)
+        return torch.exp(-error / 0.1)
 
     def _reward_track_ang_vel(self):
         error = torch.square(self.base_ang_vel[:, 2] - self.commands[:, 2])  # degree/s

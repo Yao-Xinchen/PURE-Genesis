@@ -98,8 +98,8 @@ def get_cfgs():
             "vertical": -3.0,
             "vertical_2": -100.0,
             "height": 10.0,
-            "track_vel": 1.0,
-            "track_ang_vel": 1.0,
+            "track_vel": 4.0,
+            "track_ang_vel": 3.0,
             "torque": -1e-5,
             "action_change": -1e-6,
             "dof_vel": -1e-4,
@@ -108,8 +108,8 @@ def get_cfgs():
 
     command_cfg = {
         "num_commands": 3,
-        "lin_vel_x_range": [-0.001, 0.001],
-        "lin_vel_y_range": [-0.001, 0.001],
+        "lin_vel_x_range": [-0.5, 0.5],
+        "lin_vel_y_range": [-0.5, 0.5],
         "ang_vel_range": [-0.001, 0.001],
     }
 

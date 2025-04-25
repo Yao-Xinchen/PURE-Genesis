@@ -19,6 +19,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-e", "--exp_name", type=str, default="pure")
     parser.add_argument("--ckpt", type=int, default=None)
+    parser.add_argument("-p", "--enable_plot", type=bool, default=True)
     args = parser.parse_args()
 
     gs.init(logging_level="error")
@@ -74,7 +75,9 @@ def main():
     sample_obs = env.get_observations()
     obs_dim = sample_obs.shape[1]
 
-    visualizer = PurePlot(reward_names, obs_dim)
+    if args.enable_plot:
+        print("Plotting enabled")
+        visualizer = PurePlot(reward_names, obs_dim)
 
     with torch.no_grad():
         while True:
@@ -87,7 +90,8 @@ def main():
                 scale = reward_cfg["reward_scales"].get(name, 1.0)  # Default to 1.0 if no scale
                 reward_values[name] = raw_value * scale
 
-            visualizer.update(reward_values, obs)
+            if args.enable_plot:
+                visualizer.update(reward_values, obs)
 
 
 if __name__ == "__main__":
