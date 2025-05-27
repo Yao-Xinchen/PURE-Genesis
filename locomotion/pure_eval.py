@@ -5,6 +5,7 @@ import pickle
 import glob
 import re
 import torch
+import onnx
 
 import genesis as gs
 
@@ -70,6 +71,19 @@ def main():
     policy = runner.get_inference_policy(device="cuda:0")
 
     obs, _ = env.reset()
+
+    # export to ONNX
+    onnx_path = os.path.join(log_dir, f"policy_{latest_ckpt}.onnx")
+    torch.onnx.export(
+        policy,
+        obs,  # Add batch dimension
+        onnx_path,
+        export_params=True,
+        opset_version=12,
+        do_constant_folding=True,
+        input_names=['input'],
+        output_names=['output'],
+    )
 
     reward_names = list(env.reward_functions.keys())
     sample_obs = env.get_observations()
