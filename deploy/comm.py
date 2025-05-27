@@ -97,9 +97,15 @@ if __name__ == "__main__":
 
     try:
         while True:
-            ang, _, _, _ = ti.get_feedback()
+            ang, lin, grav, dof = ti.get_feedback()
             ang_formatted = [f"{x:.3f}" for x in ang]
+            lin_formatted = [f"{x:.3f}" for x in lin]
+            grav_formatted = [f"{x:.3f}" for x in grav]
+            dof_formatted = [f"{x:.3f}" for x in dof]
             print(f"Base Angular Velocity: {ang_formatted}")
+            print(f"Base Linear Velocity: {lin_formatted}")
+            print(f"Projected Gravity: {grav_formatted}")
+            print(f"DOF Velocities: {dof_formatted}")
             time.sleep(0.5)
     except KeyboardInterrupt:
         print("\nExiting gracefully...")
