@@ -18,15 +18,15 @@ class Agent():
         self._input_name = input_names[0]
         self._output_name = output_names[0]
 
+        self._observation = np.zeros((1, 16), dtype=np.float32)
+        self._action = np.zeros((1, 4), dtype=np.float32)
+
         self._dt = 0.02
         self._lock = threading.Lock()
         self._loop = asyncio.new_event_loop()
         self._thread = threading.Thread(target=self._start_async_loop)
         self._thread.daemon = True
         self._thread.start()
-
-        self._observation = np.zeros((1, 16), dtype=np.float32)
-        self._action = np.zeros((1, 4), dtype=np.float32)
 
     def _start_async_loop(self):
         asyncio.set_event_loop(self._loop)
