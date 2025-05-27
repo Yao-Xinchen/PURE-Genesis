@@ -4,8 +4,8 @@ import signal
 import sys
 from serial import Serial
 
-BAUD_RATE = 115200
-PORT = "/dev/ttyAMA1"
+BAUD_RATE = 2000000
+PORT = "/dev/ttyAMA2"
 
 
 class TiComm:
@@ -98,7 +98,8 @@ if __name__ == "__main__":
     try:
         while True:
             ang, _, _, _ = ti.get_feedback()
-            print(f"Base Angular Velocity: {ang}")
+            ang_formatted = [f"{x:.3f}" for x in ang]
+            print(f"Base Angular Velocity: {ang_formatted}")
             time.sleep(0.5)
     except KeyboardInterrupt:
         print("\nExiting gracefully...")
