@@ -45,11 +45,11 @@ class Agent():
 
     def set_ang_vel(self, ang_vel):
         with self._lock:
-            self._observation[0, 0:3] = ang_vel
+            self._observation[0, 0:3] = ang_vel * 0.25
 
     def set_lin_vel(self, lin_vel):
         with self._lock:
-            self._observation[0, 3:6] = lin_vel
+            self._observation[0, 3:6] = lin_vel * 2.0
 
     def set_gravity(self, gravity):
         with self._lock:
@@ -57,15 +57,15 @@ class Agent():
 
     def set_commands(self, commands):
         with self._lock:
-            self._observation[0, 9:12] = commands
+            self._observation[0, 9:12] = commands * 0.15
 
     def set_dof_vel(self, dof_vel):
         with self._lock:
-            self._observation[0, 12:16] = dof_vel
+            self._observation[0, 12:16] = dof_vel * 0.15 * 180.0 / np.pi
 
     def get_action(self):
         with self._lock:
-            return self._action[0].copy()
+            return self._action[0].copy() * 100.0 * np.pi / 180.0
 
     def shutdown(self):
         if hasattr(self, '_loop') and self._loop.is_running():
