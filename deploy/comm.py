@@ -1,6 +1,7 @@
 import struct
 import threading
 import signal
+import sys
 from serial import Serial
 
 BAUD_RATE = 115200
@@ -30,7 +31,6 @@ class TiComm:
         self.tx_thread.daemon = True
         self.rx_thread.start()
         self.tx_thread.start()
-        signal.signal(signal.SIGINT, self._stop)
 
     def _rx(self):
         while self.running:
@@ -59,7 +59,7 @@ class TiComm:
                     print(f"TX Error: {e}")
                     break
 
-    def _stop(self, signum, frame):
+    def stop(self):
         self.running = False
         if hasattr(self, 'ser') and self.ser.is_open:
             self.ser.close()
@@ -82,12 +82,27 @@ class TiComm:
 
 
 if __name__ == "__main__":
+
+    def signal_handler(sig, frame):
+        if 'ti' in globals():
+            ti.stop()
+        sys.exit(0)
+
+
+    signal.signal(signal.SIGINT, signal_handler)
+
     ti = TiComm()
 
     import time
 
-    while True:
-        ang, _, _, _ = ti.get_feedback()
-        print(f"Base Angular Velocity: {ang}")
-
-        time.sleep(0.5)
+    try:
+        while True:
+            ang, _, _, _ = ti.get_feedback()
+            print(f"Base Angular Velocity: {ang}")
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        print("\nExiting gracefully...")
+        ti.stop()
+    finally:
+        if 'ti' in locals():
+            ti.stop()
