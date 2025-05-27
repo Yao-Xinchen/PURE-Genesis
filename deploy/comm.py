@@ -3,6 +3,7 @@ import threading
 import signal
 import sys
 from serial import Serial
+import numpy as np
 
 BAUD_RATE = 2000000
 PORT = "/dev/ttyAMA2"
@@ -16,13 +17,13 @@ class TiComm:
         self.tx_len = 4
 
         # receive buffer
-        self.base_ang_vel = [0.0, 0.0, 0.0]
-        self.base_lin_vel = [0.0, 0.0, 0.0]
-        self.projected_gravity = [0.0, 0.0, 9.81]
-        self.dof_vel = [0.0, 0.0, 0.0, 0.0]
+        self.base_ang_vel = np.zeros(3, dtype=np.float32)
+        self.base_lin_vel = np.zeros(3, dtype=np.float32)
+        self.projected_gravity = np.array([0.0, 0.0, 1.0], dtype=np.float32)
+        self.dof_vel = np.zeros(4, dtype=np.float32)
 
         # transmit buffer
-        self.commands = [0.0, 0.0, 0.0, 0.0]
+        self.commands = np.zeros(4, dtype=np.float32)
 
         # start threads
         self.rx_thread = threading.Thread(target=self._rx)
@@ -40,10 +41,15 @@ class TiComm:
                     packet = self.ser.read(self.rx_len * 4)
                     floats = struct.unpack("<" + "f" * self.rx_len, packet)
 
-                    self.base_ang_vel = floats[0:3]
-                    self.base_lin_vel = floats[3:6]
-                    self.projected_gravity = floats[6:9]
-                    self.dof_vel = floats[9:13]
+                    self.base_ang_vel = np.array(floats[0:3], dtype=np.float32)
+                    self.base_lin_vel = np.array(floats[3:6], dtype=np.float32)
+                    self.projected_gravity = np.array(floats[6:9], dtype=np.float32)
+                    self.dof_vel = np.array(floats[9:13], dtype=np.float32)
+
+                    # change direction
+                    self.projected_gravity = -self.projected_gravity
+                    self.projected_gravity[-1] -= 1.0
+
             except Exception as e:
                 if self.running:
                     print(f"RX Error: {e}")
