@@ -75,7 +75,7 @@ def main():
     # export to ONNX
     onnx_path = os.path.join(log_dir, f"policy_{latest_ckpt}.onnx")
     torch.onnx.export(
-        policy,
+        runner.alg.actor_critic.actor,
         obs,  # Add batch dimension
         onnx_path,
         export_params=True,
