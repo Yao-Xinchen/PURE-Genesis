@@ -78,6 +78,7 @@ class PureEnv:
             ),
         )
         self.robot.set_friction(self.env_cfg["friction"])
+        # set_mass_shift(self, mass_shift, link_indices, envs_idx=None):
 
         # add ball
         self.ball_radius = self.env_cfg["ball_radius"]  # 0.12
@@ -90,6 +91,7 @@ class PureEnv:
                 quat=self.ball_init_quat.cpu().numpy(),
             ),
         )
+        # self.ball.get_link(id=0).set_mass(1.0)
         self.ball.set_friction(self.env_cfg["friction"])
 
         # # add turbulence

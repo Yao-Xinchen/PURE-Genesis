@@ -60,11 +60,11 @@ def get_train_cfg(exp_name, max_iterations):
 
 def get_cfgs():
     env_cfg = {
-        "friction": 0.8,
+        "friction": 1.0,
         "num_actions": 4,
         "num_dofs": 20,
-        "kp": 5.0,
-        "kd": 0.5,
+        "kp": 25.0,
+        "kd": 2.5,
         # termination
         "termination_if_roll_greater_than": 60,  # degree
         "termination_if_pitch_greater_than": 60,
@@ -74,7 +74,7 @@ def get_cfgs():
         "ball_radius": 0.12,
         "episode_length_s": 10.0,
         "resampling_time_s": 4.0,
-        "action_scale": 100.0,
+        "action_scale": 40.0,
         "simulate_action_latency": False,
         "clip_actions": 2.0,
         # visualization
@@ -89,7 +89,7 @@ def get_cfgs():
             "gravity": 8.0,
             "lin_vel": 2.0,
             "ang_vel": 0.25,
-            "dof_vel": 0.15,
+            "dof_vel": 0.05,
         }
     }
 
