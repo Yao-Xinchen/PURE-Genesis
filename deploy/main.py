@@ -8,8 +8,17 @@ import sys
 import time
 
 
-class Agent():
+class Agent:
     def __init__(self, model_path):
+        self.obs_scales = {
+            "ang_vel": 0.25,
+            "lin_vel": 2.0,
+            "gravity": 1.0,
+            "dof_vel": 0.05,
+        }
+
+        self.action_scale = 40.0
+
         self._session = ort.InferenceSession(model_path, providers=['CPUExecutionProvider'])
         input_names = [input.name for input in self._session.get_inputs()]
         print('Actor input names:', input_names)
@@ -45,11 +54,11 @@ class Agent():
 
     def set_ang_vel(self, ang_vel):
         with self._lock:
-            self._observation[0, 0:3] = ang_vel * 0.25
+            self._observation[0, 0:3] = ang_vel * self.obs_scales["ang_vel"]
 
     def set_lin_vel(self, lin_vel):
         with self._lock:
-            self._observation[0, 3:6] = lin_vel * 2.0
+            self._observation[0, 3:6] = lin_vel * self.obs_scales["lin_vel"]
 
     def set_gravity(self, gravity):
         with self._lock:
@@ -57,15 +66,15 @@ class Agent():
 
     def set_commands(self, commands):
         with self._lock:
-            self._observation[0, 9:12] = commands * 0.15
+            self._observation[0, 9:12] = commands
 
     def set_dof_vel(self, dof_vel):
         with self._lock:
-            self._observation[0, 12:16] = dof_vel * 0.15 * 180.0 / np.pi
+            self._observation[0, 12:16] = dof_vel * self.obs_scales["dof_vel"]
 
     def get_action(self):
         with self._lock:
-            return self._action[0].copy() * 100.0 * np.pi / 180.0
+            return self._action[0].copy() * self.action_scale
 
     def shutdown(self):
         if hasattr(self, '_loop') and self._loop.is_running():
@@ -82,17 +91,17 @@ class Agent():
         self._loop.stop()
 
 
-class Main():
+class Main:
     def __init__(self):
         self.ti = comm.TiComm()
         model_path = "path/to/model.onnx"
         self.agent = Agent(model_path)
         self.running = True
         signal.signal(signal.SIGINT, self._stop)
-
-    def start(self):
         self._loop_thread = threading.Thread(target=self._loop)
         self._loop_thread.daemon = True
+
+    def start(self):
         self._loop_thread.start()
 
         try:

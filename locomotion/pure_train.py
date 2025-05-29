@@ -86,7 +86,6 @@ def get_cfgs():
     obs_cfg = {
         "num_obs": 20,
         "obs_scales": {
-            "gravity": 8.0,
             "lin_vel": 2.0,
             "ang_vel": 0.25,
             "dof_vel": 0.05,
