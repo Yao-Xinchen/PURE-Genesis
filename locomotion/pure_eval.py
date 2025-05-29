@@ -20,7 +20,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-e", "--exp_name", type=str, default="pure")
     parser.add_argument("--ckpt", type=int, default=None)
-    parser.add_argument("-p", "--enable_plot", type=bool, default=True)
+    parser.add_argument("-p", "--enable_plot", action="store_true")
     args = parser.parse_args()
 
     gs.init(logging_level="error")
