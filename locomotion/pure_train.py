@@ -71,7 +71,7 @@ def get_cfgs():
         # base
         "base_init_pos": [0.0, 0.0, 0.12],
         "base_init_quat": [1.0, 0.0, 0.0, 0.0],
-        "ball_radius": 0.12,
+        "ball_radius": 0.123,
         "episode_length_s": 10.0,
         "resampling_time_s": 4.0,
         "action_scale": 40.0,

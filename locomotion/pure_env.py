@@ -81,17 +81,16 @@ class PureEnv:
         # set_mass_shift(self, mass_shift, link_indices, envs_idx=None):
 
         # add ball
-        self.ball_radius = self.env_cfg["ball_radius"]  # 0.12
+        self.ball_radius = self.env_cfg["ball_radius"]  # 0.123
         self.ball_init_pos = torch.tensor([0.0, 0.0, self.ball_radius], device=self.device)
         self.ball_init_quat = torch.tensor([1.0, 0.0, 0.0, 0.0], device=self.device)
         self.ball = self.scene.add_entity(
-            gs.morphs.Sphere(
-                radius=self.ball_radius,
+            gs.morphs.URDF(
+                file="assets/ball/urdf/ball.urdf",
                 pos=self.ball_init_pos.cpu().numpy(),
                 quat=self.ball_init_quat.cpu().numpy(),
             ),
         )
-        # self.ball.get_link(id=0).set_mass(1.0)
         self.ball.set_friction(self.env_cfg["friction"])
 
         # # add turbulence
