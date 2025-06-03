@@ -84,7 +84,7 @@ def get_cfgs():
     }
 
     obs_cfg = {
-        "num_obs": 16,  # 20
+        "num_obs": 14,  # 20
         "obs_scales": {
             "lin_vel": 2.0,
             "ang_vel": 0.25,
@@ -97,7 +97,7 @@ def get_cfgs():
             "vertical": -3.0,
             "vertical_2": -100.0,
             "height": 10.0,
-            "track_vel": 4.0,
+            # "track_vel": 4.0,
             "track_ang_vel": 3.0,
             "torque": -1e-5,
             "action_change": -1e-6,
