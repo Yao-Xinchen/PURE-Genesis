@@ -84,6 +84,7 @@ def main():
         input_names=['input'],
         output_names=['output'],
     )
+    print(f"Exported ONNX model to {onnx_path}")
 
     reward_names = list(env.reward_functions.keys())
     sample_obs = env.get_observations()

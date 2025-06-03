@@ -218,7 +218,7 @@ class PureEnv:
                 self.base_lin_vel * self.obs_scales["lin_vel"],  # 3
                 self.projected_gravity,  # 3
                 self.commands * self.commands_scale,  # 3
-                self.dof_vel * self.obs_scales["dof_vel"],  # 4
+                # self.dof_vel * self.obs_scales["dof_vel"],  # 4
                 self.actions,  # 4
             ],
             dim=1,
