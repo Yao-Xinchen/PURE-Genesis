@@ -50,6 +50,8 @@ class TiComm:
                     self.projected_gravity = -self.projected_gravity
                     self.projected_gravity[-1] -= 1.0
 
+                    self.dof_vel = - self.dof_vel
+
             except Exception as e:
                 if self.running:
                     print(f"RX Error: {e}")
