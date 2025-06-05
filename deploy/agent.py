@@ -69,7 +69,7 @@ class Agent:
             )[0]
 
             with self._lock:
-                self._action = output[0]
+                self._action = output
 
             await asyncio.sleep(self._dt)
 
@@ -91,11 +91,11 @@ class Agent:
 
     def set_dof_vel(self, dof_vel):
         with self._lock:
-            self._dof_vel = dof_vel * self._obs_scales["dof_vel"]
+            self._dof_vel[0] = dof_vel * self._obs_scales["dof_vel"]
 
     def get_action(self):
         with self._lock:
-            return self._action.copy() * self._action_scale
+            return self._action[0].copy() * self._action_scale
 
     def shutdown(self):
         if hasattr(self, '_loop') and self._loop.is_running():
