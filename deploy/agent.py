@@ -16,7 +16,7 @@ class Agent:
 
         self._action_scale = 40.0
 
-        self.num_obs = 16
+        self.num_obs = 20
         self.num_actions = 4
 
         self._session = ort.InferenceSession(model_path, providers=['CPUExecutionProvider'])
@@ -56,6 +56,7 @@ class Agent:
                         self._ang_vel,
                         self._lin_vel,
                         self._grav,
+                        self._commands,
                         self._dof_vel,
                         self._action,
                     ), axis=1
