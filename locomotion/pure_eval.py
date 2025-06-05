@@ -19,7 +19,7 @@ from pure_plot import PurePlot
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-e", "--exp_name", type=str, default="pure")
-    parser.add_argument("-e", "--ckpt", type=int, default=None)
+    parser.add_argument("-c", "--ckpt", type=int, default=None)
     parser.add_argument("-p", "--enable_plot", action="store_true")
     args = parser.parse_args()
 

@@ -244,7 +244,14 @@ class PureEnv:
         self.robot.set_dofs_velocity(self.dof_vel[envs_idx], self.act_dof_idx, envs_idx)
         # reset base
         self.base_pos[envs_idx] = self.base_init_pos
-        self.base_quat[envs_idx] = self.base_init_quat.reshape(1, -1)
+        # self.base_quat[envs_idx] = self.base_init_quat.reshape(1, -1)
+        base_yaw = gs_rand_float(-180, 180, (len(envs_idx),), self.device)
+        base_pitch = gs_rand_float(-15, 15, (len(envs_idx),), self.device)
+        base_roll = torch.zeros_like(base_yaw, device=self.device)
+        self.base_quat[envs_idx] = xyz_to_quat(
+            torch.stack([base_roll, base_pitch, base_yaw], dim=1)
+        )
+
         self.robot.set_pos(self.base_pos[envs_idx], zero_velocity=True, envs_idx=envs_idx)
         self.robot.set_quat(self.base_quat[envs_idx], zero_velocity=True, envs_idx=envs_idx)
         self.base_lin_vel[envs_idx] = 0
