@@ -182,7 +182,7 @@ class PureEnv:
         self.base_ang_vel[:] = transform_by_quat(self.robot.get_ang(), inv_base_quat)
         self.projected_gravity = transform_by_quat(self.global_gravity, inv_base_quat)
         self.dof_vel[:] = self.robot.get_dofs_velocity(self.act_dof_idx)
-        self.dof_tor[:] = self.robot.get_dofs_force(self.act_dof_idx)
+        self.dof_tor[:] = self.robot.get_dofs_control_force(self.act_dof_idx)
 
         # resample commands
         envs_idx = (

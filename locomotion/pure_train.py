@@ -64,7 +64,7 @@ def get_cfgs():
         "num_actions": 4,
         "num_dofs": 20,
         "kp": 25.0,
-        "kd": 2.5,
+        "kd": 50.0,
         # termination
         "termination_if_roll_greater_than": 60,  # degree
         "termination_if_pitch_greater_than": 60,
@@ -74,9 +74,9 @@ def get_cfgs():
         "ball_radius": 0.123,
         "episode_length_s": 10.0,
         "resampling_time_s": 4.0,
-        "action_scale": 40.0,
+        "action_scale": 10.0,
         "simulate_action_latency": False,
-        "clip_actions": 2.0,
+        "clip_actions": 5.0,
         # visualization
         "visualize_target": False,
         "visualize_camera": False,
