@@ -84,11 +84,12 @@ def get_cfgs():
     }
 
     obs_cfg = {
-        "num_obs": 14,  # 20
+        "num_obs": 13,  # 20
         "obs_scales": {
             "lin_vel": 2.0,
             "ang_vel": 0.25,
-            "dof_vel": 0.05,
+            "dof_vel": 0.1,
+            "gravity": 10.0,
         }
     }
 

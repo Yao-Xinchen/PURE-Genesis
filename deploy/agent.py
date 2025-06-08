@@ -8,16 +8,16 @@ import onnxruntime as ort
 class Agent:
     def __init__(self, model_path):
         self._obs_scales = {
-            "ang_vel": 0.25,
             "lin_vel": 2.0,
-            "gravity": 1.0,
-            "dof_vel": 0.05,
+            "ang_vel": 0.25,
+            "dof_vel": 0.1,
+            "gravity": 10.0,
         }
 
-        self._action_scale = 40.0
+        self._action_scale = 10.0
 
         # self.num_obs = 20
-        self.num_obs = 14
+        self.num_obs = 13
         self.num_actions = 4
 
         self._session = ort.InferenceSession(model_path, providers=['CPUExecutionProvider'])
@@ -56,7 +56,7 @@ class Agent:
                     (
                         self._ang_vel,
                         # self._lin_vel,
-                        self._grav,
+                        self._grav[:, :2],
                         # self._commands,
                         self._dof_vel,
                         self._action,
@@ -83,7 +83,7 @@ class Agent:
 
     def set_gravity(self, gravity):
         with self._lock:
-            self._grav[0] = gravity
+            self._grav[0] = gravity * self._obs_scales["gravity"]
 
     def set_commands(self, commands):
         with self._lock:
