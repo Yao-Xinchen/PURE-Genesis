@@ -37,7 +37,7 @@ class Main:
             self.agent.set_dof_vel(dof_vel)
 
             action = self.agent.get_action()
-            self.ti.set_commands(action)
+            self.ti.set_motor_commands(action)
 
     def _stop(self, signum, frame):
         print("\nShutting down...")

@@ -23,7 +23,7 @@ class TiComm:
         self.dof_vel = np.zeros(4, dtype=np.float32)
 
         # transmit buffer
-        self.commands = np.zeros(4, dtype=np.float32)
+        self.motor_commands = np.zeros(4, dtype=np.float32)
 
         # start threads
         self.rx_thread = threading.Thread(target=self._rx)
@@ -60,7 +60,7 @@ class TiComm:
     def _tx(self):
         while self.running:
             try:
-                packet = b"**" + struct.pack("<" + "f" * self.tx_len, *self.commands)
+                packet = b"**" + struct.pack("<" + "f" * self.tx_len, *self.motor_commands)
                 self.ser.write(packet)
             except Exception as e:
                 if self.running:
@@ -85,8 +85,8 @@ class TiComm:
             self.dof_vel
         )
 
-    def set_commands(self, commands):
-        self.commands = commands
+    def set_motor_commands(self, commands):
+        self.motor_commands = commands
 
 
 if __name__ == "__main__":
