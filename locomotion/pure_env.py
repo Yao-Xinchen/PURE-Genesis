@@ -219,7 +219,7 @@ class PureEnv:
                 self.projected_gravity[:, :2] * self.obs_scales["gravity"],  # 2
                 # self.commands * self.commands_scale,  # 3
                 self.dof_vel * self.obs_scales["dof_vel"],  # 4
-                self.actions,  # 4
+                # self.actions,  # 4
             ],
             dim=1,
         )
